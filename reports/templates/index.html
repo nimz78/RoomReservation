@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List Of Reservations</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+
+<body>
+    <div class="pt-5 relative overflow-x-auto">
+        <table class="w-3/4 mx-auto text-sm text-left text-gray-500 dark:text-gray-400 shadow-md sm:rounded-lg">
+            <caption
+                class="p-5 text-lg font-semibold text-left text-gray-900 bg-white dark:text-white dark:bg-gray-800">
+                List Of Reservations
+                <p class="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400">Browse a list reservations here.
+                </p>
+            </caption>
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                    <th scope="col" class="px-6 py-3">Room</th>
+                    <th scope="col" class="px-6 py-3">Customer</th>
+                    <th scope="col" class="px-6 py-3">Total Price</th>
+                    <th scope="col" class="px-6 py-3">From</th>
+                    <th scope="col" class="px-6 py-3">To</th>
+                    <th scope="col" class="px-6 py-3">Voucher</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in reservations %}
+                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                        {{r.room}}</th>
+                    <td class="px-6 py-4">{{r.customer_name}}</td>
+                    <td class="px-6 py-4">{{r.total_price}}</td>
+                    <td class="px-6 py-4">{{r.from_date}}</td>
+                    <td class="px-6 py-4">{{r.to_date}}</td>
+                    <td class="px-6 py-4">{{r.voucher_code}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+
+
+</body>
+
+</html>
