@@ -50,7 +50,7 @@ class RoomDetailApiView(APIView):
 
         if not room_instance:
             return Response(
-                {"message": "Object with todo id does not exists"},
+                {"message": "Object with room id does not exists"},
                 status=status.HTTP_404_NOT_FOUND
             )
 
@@ -68,7 +68,7 @@ class RoomDetailApiView(APIView):
 
         if not room_instance:
             return Response(
-                {"message": "Object with todo id does not exists"},
+                {"message": "Object with room id does not exists"},
                 status=status.HTTP_404_NOT_FOUND
             )
 
@@ -83,6 +83,25 @@ class ReservationApiView(APIView):
             return Room.objects.get(id=room_id)
         except Room.DoesNotExist:
             return None
+        
+    def put(self, request, room_id, *args, **kwargs):
+        room_instance = self.get_object(room_id)
+
+        if not room_instance:
+            return Response(
+                {"message": "Object with room id does not exists"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        serializer = ReservationSerializer(
+            instance=room_instance, data=request.data, partial=True)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
+
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
 
     def get(self, request, room_id, *args, **kwargs):
         room_instance = self.get_object(room_id)
