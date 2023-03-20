@@ -93,3 +93,8 @@ Body:
 To read reserved room (Reservation get method):
 
     http://127.0.0.1:8000/api/rooms/3/reservations
+
+
+To Browse a list of reservations(HTML):
+
+    http://127.0.0.1:8000/reports/
