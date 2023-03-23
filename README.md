@@ -132,4 +132,4 @@ To Browse a list of reservations(HTML):
  
 To run unittest python please write this command in your terminal:
 
-python manage.py test rooms  
+    python manage.py test rooms  
