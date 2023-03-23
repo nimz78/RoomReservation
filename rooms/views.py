@@ -73,7 +73,10 @@ class RoomDetailApiView(APIView):
 
         room_instance.delete()
 
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(
+            {"message": "Reservation deleted successfully"},
+            status=status.HTTP_204_NO_CONTENT
+        )
 
 
 class ReservationApiView(APIView):
