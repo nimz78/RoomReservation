@@ -17,7 +17,7 @@ class Reservation(models.Model):
     to_date = models.DateField(blank=False)
     total_price = models.IntegerField(blank=False)
     customer_name = models.CharField(max_length=30, blank=False)
-    voucher_code = models.CharField(blank=False, max_length=30)
+    voucher_code = models.CharField(blank=False, max_length=30, unique=True)
 
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
 

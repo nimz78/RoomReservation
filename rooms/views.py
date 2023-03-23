@@ -182,12 +182,6 @@ class ReservationApiView(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        serializer = ReservationSerializer(
-            reservation_instance, data=request.data)
-
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
         if datetime.datetime.strptime(request.data['from_date'], "%Y-%m-%d").date() < datetime.date.today():
             return Response(
                 {"message": "Reservation cannot be made for an expired date"},
@@ -195,7 +189,8 @@ class ReservationApiView(APIView):
             )
 
         last_room_reservations = Reservation.objects.filter(
-            room_id=room_instance.id).exclude(id=reservation_id)
+            room_id=room_instance.id)
+
         has_overlap = False
         for reservation in last_room_reservations:
             if date_util.is_overlapped([(date_util.parse_date(request.data['from_date']), date_util.parse_date(request.data['to_date'])), ((

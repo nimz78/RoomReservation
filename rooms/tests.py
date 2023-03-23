@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import RequestFactory, TestCase
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 from django.urls import reverse
@@ -43,6 +43,7 @@ class RoomListApiViewAPITestCase(APITestCase):
         response = self.client.post(self.url, invalid_room_data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(Room.objects.count(), 0)
+
 
 class RoomDetailApiViewTest(APITestCase):
 
@@ -101,6 +102,7 @@ class RoomDetailApiViewTest(APITestCase):
         response = self.client.delete(reverse('room-detail', args=[99999]))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+
 class ReservationApiViewTest(TestCase):
     def setUp(self):
         self.client = APIClient()
@@ -134,7 +136,32 @@ class ReservationApiViewTest(TestCase):
             'to_date': (datetime.now().date() + timedelta(days=1)).strftime('%Y-%m-%d'),
             'customer_name': 'Test user'
         }
+        self.valid_payload_put = {
+            'from_date': (datetime.now() + timedelta(days=10)).strftime('%Y-%m-%d'),
+            'to_date': (datetime.now().date() + timedelta(days=15)).strftime('%Y-%m-%d'),
+            'customer_name': 'Test user',
+            "total_price": 300000,
+            "voucher_code": 23456,
+            "room": self.room.id
+        }
+        self.invalid_payload_put = {
+            'from_date': datetime.now().strftime('%Y-%m-%d'),
+            'to_date': (datetime.now().date() + timedelta(days=2)).strftime('%Y-%m-%d'),
+            'customer_name': '',
+            "total_price": 300000,
+            "voucher_code": 23456,
+            "room": self.room.id
+        }
+        self.overlap_payload_put = {
+            'from_date': datetime.now().strftime('%Y-%m-%d'),
+            'to_date': (datetime.now().date() + timedelta(days=1)).strftime('%Y-%m-%d'),
+            'customer_name': 'Test user',
+            "total_price": 300000,
+            "voucher_code": 23456,
+            "room": self.room.id
+        }
         self.url = reverse('reservation', kwargs={'room_id': self.room.id})
+        self.url_put = reverse('reservation-detail', kwargs={'room_id': self.room.id, 'reservation_id': self.reservation.id})
 
     def test_get_valid_reservation(self):
         response = self.client.get(self.url)
@@ -159,3 +186,26 @@ class ReservationApiViewTest(TestCase):
     def test_post_invalid_reservation(self):
         response = self.client.post(self.url, data=self.invalid_payload)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_put_valid_reservation(self):
+        response = self.client.put(self.url_put, data=self.valid_payload_put)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_put_invalid_reservation(self):
+        response = self.client.put(self.url_put, data=self.invalid_payload_put)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_put_with_has_overlap(self):
+        response = self.client.put(self.url_put, data=self.overlap_payload_put)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_delete_reservation(self):
+        response = self.client.delete(self.url_put)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(Reservation.objects.filter(id=self.reservation.id).exists())
+
+    def test_delete_invalid_reservation(self):
+        url_invalid = reverse('reservation-detail', kwargs={'room_id': self.room.id, 'reservation_id': 1000})
+        response = self.client.delete(url_invalid)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertTrue(Reservation.objects.filter(id=self.reservation.id).exists())
