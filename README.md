@@ -98,3 +98,7 @@ To read reserved room (Reservation get method):
 To Browse a list of reservations(HTML):
 
     http://127.0.0.1:8000/reports/
+
+
+
+#TODO: explain 2 or 3 lines about each application
